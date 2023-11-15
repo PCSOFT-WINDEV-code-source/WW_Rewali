@@ -1,0 +1,321 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_ECommerce
+ major_version : 28
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1e0c4c3d00049bd8
+ internal_properties : CAAAAAgAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  internal_properties : CAAAAAgAAACgKADRfD769GFGbRPmGvUx97skvKVb06+bYIhvqV/bEQrOS+L8mT/n1ZpbBtPw4vLq1eJ69In5DFs63eesMYJAzMLkuXG0meT70Ce1mfFFKTxJPw4YJjPvCcY8ztJEFqXQfQ9GamPlrVN6EXVvmJNf5D9Qi7aw02T4GpF16SAlXNP5bhbKI93cDVT+VXEyDGAyFzixDDhr0mdaPoh5rU+R5+M+PT4a8dHAbr9/aTMklLV1eqlSfj0596NCRlmLLodPlwE4C0UzokItWtANCIgqHz7pn1jNYfgEOqbIIOTPKYmfuUHF8CiRMAQkElIBoUYEhiCCROfZ7yINgMl8TQnXxL1xYxE89gPkNwo/DYs9xOB3o4jnnFCnveMKkeDeiZHgF48JCkxuuzRaig0q1Zu4q0HB8WB73KWldOXFXEDKb6uTIVjPbUbtz4dkBoEqBQfZ+1+lFeStZTsDaZvVNyysZ06213HdGPoyN7bZ1jKGERQk+5/iSFLagA==
+  type_code : 31
+  p_codes :
+   -
+     internal_properties : CAAAAAgAAAD70jq0XwkGPSGisxW+nrbbuoSqYD2Nxh2jCBIEwH+bx9C9kbkmHRNflFcEBTciKcbnYwlPChtYq3rbayyFue92hlrcRtXytMaub6n4YMC7gnwhQIS+4uRz5i9aliok9wnO8kVNB7Ki+Q/xz+RB1A5a8SikZLabmIhhCoaviz109w==
+     code : |1-
+      // La collection de procédures COL_ECommerce sert de base à la gestion d'un site de commerce électronique
+      // Elle utilise les fichiers suivants de l'analyse :
+      // - Client : fichier des comptes clients
+      // - Adresse : fichiers des adresses actives pour les clients
+      // - Commande : fichier des commandes passées sur le site
+      // - LigneCde : fichier du détail des commandes
+      // - AdresseArchive : fichier des adresses utilisées dans les commandes, en ajout seulement
+      // - Produit : fichier des produits
+      // - FamilleProduit : fichier des familles de produits
+      // - PhotoProduit : fichier des photos des produits
+      // - TauxTaxe : fichier des taux de taxe
+      
+      
+      // Constantes 
+      constant
+      	// Types de règlements (utilisé dans la rubrique Commande.TypeReglement)
+      	//	REGL_CB = 1				// Règlement par carte bancaire
+      	REGL_PAYPAL = 2			// Règlement par PayPal
+      	//	REGL_VIREMENT = 3		// Règlement par virement bancaire
+      	//	REGL_CHEQUE = 4			// Règlement par chèque
+      	
+      	// Etats d'une commande (utilisé dans la rubrique Commande.EtatCommande)
+      	CDE_ATTENTEREGLEMENT = 1		// Commande en attente de règlement
+      	CDE_REGLEE = 2					// Commande réglée
+      	
+      FIN
+      
+      
+      gnIDCommande est un entier sur 8			// Commande en cours de création
+      
+      gsEmailConfirmationCommande est une chaine = "servicecommande"	// Adresse expéditeur des emails de confirmation de commande
+      
+      
+      // Le nom du site est une chaîne utilisée dans les messages ou les e-mails envoyés depuis le site
+      // Sa valeur par défaut est le nom de déploiement du site mais n'importe quelle valeur peut être utilisée
+      gsNomSite est une chaine = ProjetInfo(piNomSiteDéployé)
+     type : 720896
+  procedures :
+   -
+     name : MonétaireVersChaine
+     procedure_id : 2167395417038990332
+     type_code : 15
+     code : |1+
+      // Résumé : Renvoie le monétaire prêt à être affiché
+      // Syntaxe :
+      //[ <Résultat> = ] MonétaireVersChaine (<moValeur> est monétaire)
+      //
+      // Paramètres :
+      //	moValeur (monétaire) : <indiquez ici le rôle de moValeur>
+      // Valeur de retour :
+      // 	chaîne ANSI : Monétaire formaté pour l'affichage
+      
+      PROCEDURE MonétaireVersChaine( local moValeur est un monétaire)
+      
+      renvoyer NumériqueVersChaîne(moValeur, maskMonétaireSystème)
+      
+     type : 458752
+   -
+     name : CommandeRèglementVersChaîne
+     internal_properties : CAAAAAgAAADoOcLgd1ngocVZtc5/eTt6Kj+5Z6i6c8GvbsdNTphosXnXJ54jVImNG4BDq6DZnXIIa8u4lZX2zsznM7H1LEfJ76+AuMQoGAxCuIgVmBuvNppqz/k8EQIGPA2FsC8K0ntYKE4KF4OzfV9l7sL73A==
+     procedure_id : 2167831699855264213
+     type_code : 15
+     code : |1-
+      // Résumé : Permet de récupérer le règlement en lettres à partir de sa valeur
+      // Syntaxe :
+      //[ <Résultat> = ] CommandeRèglementVersChaîne (<nTypeReglement>)
+      //
+      // Paramètres :
+      //	nTypeReglement : Code du règlement
+      // Valeur de retour :
+      // 	chaîne : Le règlement en langage naturel
+      
+      PROCEDURE CommandeRèglementVersChaîne(nTypeReglement)
+      
+      sTypeRèglement est une chaine
+      
+      SELON nTypeReglement 
+      //	CAS REGL_CB
+      //		sTypeRèglement = "CB"
+      //	CAS REGL_CHEQUE
+      //		sTypeRèglement = "Chèque"
+      //	CAS REGL_VIREMENT
+      //		sTypeRèglement = "Virement bancaire"
+      	CAS REGL_PAYPAL
+      		sTypeRèglement = "Paypal"
+      	AUTRE CAS
+      		dbgassertion(faux,"Impossible de trouver le type de règlement")
+      		sTypeRèglement = "< Inconnu >"				
+      FIN
+      
+      
+      renvoyer sTypeRèglement
+     type : 458752
+   -
+     name : CommandeEtatVersChaine
+     internal_properties : CAAAAAgAAADaa9TV5flAufHFM7iF5fMiZuuFqyLOU+Fj2vX7kEC0VWXbD04ZvO0hD3TlwSppZRoYu4eMe1UK8a0YZgbGPbKm+LCRpwn99SsP5aMCiRyKA8fXPAit+gvR9XZkWVgT8ZRx+d+hKLQERPBm4NDJ7g==
+     procedure_id : 2167832163711839619
+     type_code : 15
+     code : |1-
+      // Résumé : Permet de récupérer l'état de la commande en lettres
+      // Syntaxe :
+      //[ <Résultat> = ] CommandeEtatVersChaine (<nEtatCommande>)
+      //
+      // Paramètres :
+      //	nEtatCommande : Code de l'état de la commande
+      // Valeur de retour :
+      // 	chaîne : Etat de la commande en langage naturel
+      
+      PROCEDURE CommandeEtatVersChaine(nEtatCommande)
+      
+      sEtat est une chaine
+      
+      selon nEtatCommande
+      
+      	CAS CDE_ATTENTEREGLEMENT // Commande en attente de règlement
+      		sEtat = "En attente de règlement"
+      	CAS CDE_REGLEE // Commande réglée
+      		sEtat = "Réglée"
+      	AUTRE CAS
+      		sEtat = "< Inconnu >"		
+      FIN
+      
+      
+      renvoyer sEtat
+     type : 458752
+   -
+     name : CommandeCrée
+     internal_properties : CAAAAAgAAAB2z+fXmdREpUITjMLq/olOBbK5XWEcSnEVXTDF4qRVKyDZNLe7mhwn/EfaeuSKhQzaL+TlxNaSnt4jrQBlMOprAw1x7UY3SsInENyNR2mEFO6iwhhyaD/u/C5kucm2YX9tGo2GwnUElMyPzCY0DRyqhaMBp+GlqJ8IlV0/lNvKn4Fx881uGOTnGKOyCgQAGdo=
+     procedure_id : 2170049195742797771
+     type_code : 15
+     code : |1-
+      // Résumé : Crée une nouvelle commande avec un numéro séquentiel par jour
+      // Syntaxe :
+      //[ <Résultat> = ] CommandeCrée ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	chaîne : Numéro de la commande 
+      
+      PROCEDURE CommandeCrée()
+      
+      // Les numéros générés sont de la forme :
+      // BC01-AAAAMMJJ-numseq
+      // BC01 : bons de commandes du site web
+      // AAAAMMJJHHMMSS : date de création du bon de commande
+      // numseq : numéro séquentiel du BC
+      
+      // On tente de se positionner sur l'enregistrement du jour et de le bloquer
+      tantque HLitRecherchePremier(NumCommande,DateCommande,DateSys(),hBlocageEcriture)=Faux
+      	// Si on n'a pas trouvé d'enreg, on l'ajoute
+      	si htrouve()=Faux ALORS
+      		NumCommande.DateCommande = datesys() 
+      		NumCommande.Numero = 0
+      		hajoute(NumCommande)
+      	sinon
+      		// Enregistrement trouvé mais le blocage n'est pas possible
+      		si HErreurBlocage() ALORS
+      			continuer
+      		sinon
+      			// Autre erreur
+      			renvoyer ""
+      		FIN
+      	FIN
+      FIN
+      
+      // Lit le numéro de séquence, l'incrémente et met à jour le fichier
+      nNumSequence est un entier = NumCommande.Numero + 1
+      NumCommande.Numero++
+      si hmodifie(NumCommande)=Faux ALORS
+      	renvoyer ""
+      FIN
+      
+      // Génère le numéro de BC
+      sNumCommande est une chaine = "BC01-"+ DateSys() + maintenant() + NumériqueVersChaîne(nNumSequence,"08d")
+      
+      // Crée l'enregistrement de commande
+      hraz(Commande)
+      commande.NumCommande = sNumCommande
+      Commande.NumFacture = null
+      Commande.IDAdresseFacturation = Null
+      Commande.DateCommande = datesys() + Maintenant()
+      commande.EtatCommande = CDE_ATTENTEREGLEMENT
+      si hajoute(Commande)=Faux ALORS
+      	// Echec de l'ajout
+      	sNumCommande = ""
+      FIN
+      
+      renvoyer sNumCommande
+      
+      fin:
+      // Dans tous les cas, on débloque le compteur de numéros
+      HDébloqueNumEnr(NumCommande,hNumEnrEnCours)
+     type : 458752
+   -
+     name : CommandeEmailConfirmationDefaut
+     internal_properties : CAAAAAgAAAAgszqkMr6DsddhaXnzuv/eFR370LOmHPWLhme8iz6GpkjzsA/RN8WPHpffwPUAUs6AHrhpy1VcF8eoucmQ9k6jx1MQzethXVqbLUhMPaEZiYr1PpiYdwTB0g8SHl189Ho/taEOQAqpI5igDxc2/sTiLguwNO0Q+htBEQACJ4ajJULxqmPCu17f5MEl1LsdRw==
+     procedure_id : 2185672307277947536
+     type_code : 15
+     code : |1-
+      // Résumé : Procédure par défaut d'envoi d'email de confirmation de commande
+      // Syntaxe :
+      //CommandeEmailConfirmationDefaut (<nIDCommande> est entier sur 8 octets [, <nModeReglement> est entier])
+      //
+      PROCEDURE CommandeEmailConfirmationDefaut( nIDCommande est un entier sur 8 , nModeReglement est un entier = REGL_PAYPAL )
+      
+      // Passe le time out à 3 seconde (par défaut le serveur smtp est sur localhost, donc s'il met plus de 3 secondes à répondre, il y a un souci)
+      EmailChangeTimeOut(3)
+      
+      // Construction de l'email
+      Email.Sujet = ChaîneConstruit("Confirmation de votre commande %1",gsNomSite)
+      Email.Expéditeur = gsEmailConfirmationCommande
+      Email.NbDestinataire = 1
+      
+      HLitRecherchePremier(Client,IDClient,COL_ComptesClient.nClientEnCours())
+      Email.Destinataire[1] = Client.eMail
+      
+      HLitRecherchePremier(Commande,IDCommande,nIDCommande)
+      selon nModeReglement
+      	cas REGL_PAYPAL
+      		email.Message = ChaîneConstruit(<§@1e0c492300017dcb0004§>,gsNomSite,MonétaireVersChaine(Commande.TotalTTC),Commande.NumCommande)
+      FIN
+      
+      // Envoi du message
+      SI EmailOuvreSessionSMTP(COL_ComptesClient.gsLoginSMTP,COL_ComptesClient.gsMotDePasseSMTP,COL_ComptesClient.gsServeurSMTP,COL_ComptesClient.gnPortSMTP) ALORS
+      	EmailEnvoieMessage(COL_ComptesClient.gsLoginSMTP)
+      	EmailFermeSession(COL_ComptesClient.gsLoginSMTP)
+      FIN
+     type : 458752
+   -
+     name : CommandeModifieEtat
+     procedure_id : 2248744459901193986
+     type_code : 15
+     code : |1-
+      // Résumé : Permet de modifier l'état de la commande
+      // Syntaxe :
+      //[ <Résultat> = ] CommandeModifieEtat (<nEtat>)
+      //
+      // Paramètres :
+      //	nEtat : Le nouvel état de la commande
+      // Valeur de retour :
+      // 	booléen : Vrai si la modification a réussi, faux sinon
+      //
+      PROCEDURE CommandeModifieEtat(nEtat)
+      
+      // Si le nouvel état ne fait pas partie de la liste des constantes
+      si pas nEtat dans (CDE_ATTENTEREGLEMENT, CDE_REGLEE) ALORS
+      	renvoyer faux
+      FIN
+      
+      
+      HLitRecherchePremier(Commande,IDCommande,gnIDCommande)
+      si htrouve(commande) = faux ALORS
+      	dbgassertion(faux,"Impossible de trouver la commande concernée par ce paiement")
+      	renvoyer faux
+      FIN
+      
+      // Modifie l'état de la commande
+      Commande.EtatCommande = nEtat
+      
+      renvoyer hmodifie(commande)
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CAAAAAgAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1e0c492300017dcb
+  internal_properties : CAAAAAgAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Vous avez choisi d'effectuer votre paiement par carte bancaire.\r\n\r\nCliquez sur le bouton \"Valider le paiement par Carte Bancaire\" pour être redirigé sur le site de paiement sécurisé.\r\n\r\nAprès le paiement, une page de confirmation de votre commande vous sera présentée et un email de confirmation sera automatiquement envoyé."
+     index : 0
+   -
+     text :
+      fr-FR : "Vous avez choisi d'effectuer votre paiement par PayPal.\r\n\r\nCliquez sur le bouton \"Valider le paiement par PayPal\" pour être redirigé sur le site PayPal.\r\n\r\nAprès le paiement, une page de confirmation de votre commande vous sera présentée et un email de confirmation sera automatiquement envoyé."
+     index : 1
+   -
+     text :
+      fr-FR : "Vous avez choisi d'effectuer votre paiement par virement bancaire. Nous vous invitons à utiliser les coordonnées bancaires ci-dessous (en précisant bien à votre banque d'effectuer un \"virement OUR\" si vous effectuez un paiement depuis les TOM ou l'l'étranger\r\n\r\nCes informations vous seront récapitulées dans votre mail de confirmation de commande.\r\nMerci de préciser dans l'objet de votre virement, le numéro de votre commande.\r\n\r\nCode banque : 30047\r\nCode guichet : 14121\r\nNuméro de compte : 00037236001\r\nClé : 53\r\nDomiciliation : CIC Nantes-Sud\r\n\r\nInformation complémentaires pour les virements OUR :\r\nIBAN : FR76 3004 7141 2100 0372 3600 153\r\nSwift : CMCIFRPP\r\n\r\nVotre commande ne sera traitée par nos services qu'à réception des fonds de votre virement sur notre compte. Si votre règlement ne nous est pas parvenu sous 10 jours, votre commande sera automatiquement annulée."
+     index : 2
+   -
+     text :
+      fr-FR : "Vous avez choisi d'effectuer votre paiement par chèque.\r\n\r\nMerci de libeller votre chèque à l'ordre de la société xxx en inscrivant le numéro de votre commande au dos du chèque et de nous l'envoyer à l'adresse suivante :\r\n\r\nxxx - Service Commande\r\nrue yyyy\r\n34000 MONTPELLIER\r\n\r\nDès réception de votre chèque, celui-ci sera traité par nos services.\r\n\r\nSi votre règlement ne nous est pas parvenu sous 10 jours, votre commande sera automatiquement annulée.\r\n"
+     index : 3
+   -
+     text :
+      fr-FR : "Bonjour,\r\n\r\nNous vous remercions de votre commande (commande %3 d'un montant de %2 euros) sur le site %1.\r\nVotre paiement a été validé et votre commande va maintenant être prise en charge.\r\n\r\nCordialement,\r\nLe service commande"
+     index : 4
+   -
+     text :
+      fr-FR : "Bonjour,\r\n\r\nNous vous remercions de votre commande sur le site %1.\r\nVous avez choisi d'effectuer votre paiement par chèque.\r\n\r\nMerci de libeller votre chèque d'un montant de %2 euros à l'ordre de la société xxx en inscrivant le numéro de votre commande (%3) au dos du chèque et de nous l'envoyer à l'adresse suivante :\r\n\r\nxxx - Service Commande\r\nrue yyyy\r\n34000 MONTPELLIER\r\n\r\nDès réception de votre chèque, celui-ci sera traité par nos services.\r\n\r\nSi votre règlement ne nous est pas parvenu sous 10 jours, votre commande sera automatiquement annulée.\r\n\r\nCordialement,\r\nLe service commande"
+     index : 5
+   -
+     text :
+      fr-FR : "Bonjour,\r\n\r\nNous vous remercions de votre commande sur le site %1.\r\n\r\nVous avez choisi d'effectuer votre paiement par virement bancaire. \r\nNous vous invitons à utiliser les coordonnées bancaires ci-dessous (en précisant bien à votre banque d'effectuer un \"virement OUR\" si vous effectuez un paiement depuis les TOM ou l'étranger).\r\n\r\nMerci de préciser dans l'objet de votre virement, le numéro de votre commande (commande %3).\r\nLe montant du virement à effectuer est de %2 euros.\r\n\r\nCode banque : 30047\r\nCode guichet : 14121\r\nNuméro de compte : 00037236001\r\nClé : 53\r\nDomiciliation : CIC Nantes-Sud\r\n\r\nInformation complémentaires pour les virements OUR :\r\nIBAN : FR76 3004 7141 2100 0372 3600 153\r\nSwift : CMCIFRPP\r\n\r\nVotre commande ne sera traitée par nos services qu'à réception des fonds de votre virement sur notre compte. Si votre règlement ne nous est pas parvenu sous 10 jours, votre commande sera automatiquement annulée.\r\n\r\nCordialement,\r\nLe service commande"
+     index : 6
+custom_note :
+ internal_properties : CAAAAAgAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

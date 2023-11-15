@@ -1,0 +1,499 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_ComptesClient
+ major_version : 28
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1e11e58700ca880f
+ internal_properties : CAAAAAgAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  internal_properties : CAAAAAgAAAAQnIYKWwxTLourwdOeC151PTUPy00H9oLjN+NdRD8qLIsDtB27JV0EG+RJBuVA/MI01Ez7tR6ytJnX2+3OpEkut2btVB+QkR8iTdw/QRB27WY8CJqRQQtDb5FWcFJ+PutE3vKpnZBcZN/xG2qtahUtkz65ABwtyGvbBu8ZaQm7mZeAYpduGFToLjxkrDFRdQ+FgQ==
+  type_code : 31
+  p_codes :
+   -
+     internal_properties : CAAAAAgAAACBc0TPU7RpRhEaV1jEz85fmatunFY3xzPh2FOemLVp8Wv+YICNKr3RUhkPRlRqIxypnFhEZsqVSVHA69yRr1v3nlZXugrn91l7VYVz/wk9RYSeh05j+imoKyu4ExD4uGOi/mIoR9EU5OrMfSY=
+     code : |1+
+      constant
+      	// Options de la fonction AdresseAffichable
+      	ADR_ACTIVE = 0
+      	ADR_ARCHIVE = 1
+      	MDP_NON_DEFINI = "NonChangé"
+      	
+      	COOKIE_EMAIL = "REWALI_EMAIL_CLIENT"
+      	COOKIE_MDP =  "REWALI_MDP_CLIENT"
+      FIN
+      
+      
+      STClient est une structure
+      	IDClient est un entier
+      	eMail est une chaine
+      	Civilité est un entier
+      	Nom est une chaine
+      	Prénom est une chaine
+      	TelFixe est une chaine
+      	TelPortable est une chaine
+      	DateCréation est une date
+      FIN
+      
+      
+      gbComptesClientsInitialisés est un booléen = faux
+      
+      
+      gbActivationParEmail est un booleen = Vrai			// Vrai si les comptes utilisateurs sont créés inactifs et doivent être activés par e-mail
+      
+      // Paramètres pour les envois de messages
+      gsLoginSMTP est une chaine = ""
+      gsMotDePasseSMTP est une chaine = "" 
+      gsServeurSMTP est une chaine = "localhost"
+      gnPortSMTP est une chaine = 25
+      gsEmailExpediteurActivation est une chaine = "activation"
+      gsEmailSupportTechnique est une chaine = "assistance"
+      
+      // Le nom du site est une chaîne utilisée dans les messages ou les e-mails envoyés depuis le site
+      // Sa valeur par défaut est le nom de déploiement du site mais n'importe quelle valeur peut être utilisée
+      gsNomSite est une chaine = ProjetInfo(piNomSiteDéployé)
+      
+      privee
+      gnClientEnCours est un entier sur 8	// IDClient du client connecté (0 si pas de client connecté)
+      
+     type : 720896
+  procedures :
+   -
+     name : bConnecte
+     procedure_id : 2166765414062428132
+     type_code : 15
+     code : |1+
+      // Résumé : Connecte un client
+      // Syntaxe :
+      //[ <Résultat> = ] bConnecte (<sIdentifiant> est chaîne, <sMotDePasse> est chaîne)
+      //
+      // Paramètres :
+      //	sIdentifiant (chaîne) : Identifiant de connexion
+      //	sMotDePasse (chaîne) : Mot de passe de connexion
+      // Valeur de retour :
+      // 	booléen : Vrai si la connexion est effectuée, Faux sinon
+      
+      PROCEDURE bConnecte( sIdentifiant est une chaine, sMotDePasse est une chaine )
+      
+      // L'identifiant peut être un e-mail ou un nom d'affichage
+      SI HLitRecherchePremier(Client,Email,sIdentifiant) = Faux ALORS
+      	// Utilisateur inconnu
+      	RENVOYER Faux
+      FIN
+      
+      // L'utilisateur a été trouvé, il faut vérifier son mot de passe
+      SI Client.MotDePasse <> sMotDePasse ALORS
+      	// Mot de passe incorrect
+      	RENVOYER Faux
+      FIN
+      
+      // Le mot de passe est valide, on connecte l'utilisateur en recopiant son identifiant dans la variable du composant
+      gnClientEnCours = Client.IDClient
+      
+      RENVOYER Vrai
+      
+      
+     type : 458752
+   -
+     name : bEstConnecte
+     procedure_id : 2166765723300145532
+     type_code : 15
+     code : |1-
+      // Résumé : Indique si l'utilisateur est connecté au site
+      // Syntaxe :
+      //[ <Résultat> = ] bEstConnecte ()
+      //
+      // Valeur de retour :
+      // 	booléen : Vrai si l'utilisateur s'est connecté au site
+      //
+      PROCEDURE bEstConnecte()
+      
+      renvoyer (gnClientEnCours<>0)
+     type : 458752
+   -
+     name : Deconnecte
+     internal_properties : CAAAAAgAAACyU2x9rFVIgfUhDRbnOfs6io9hD7DSU+nnnuctvnCwWZH/Zy6T1LHdO4i7gxipbaLoy6NgfU12ahiTV31BwAsNQwNctNDcnJgOFGyBZJ8jmm6+q6UIVSbyKCmpXJueZg/MXLpWQ1e3eVd+iGihBg==
+     procedure_id : 2166765723300211162
+     type_code : 15
+     code : |1-
+      // Résumé : Déconnecte l'utilisateur en cours
+      // Syntaxe :
+      // Deconnecte ()
+      //
+      PROCEDURE Deconnecte()
+      
+       // Efface la globale de l'identifiant
+      gnClientEnCours = 0
+      
+      CookieEcrit(COOKIE_EMAIL, "")
+      CookieEcrit(COOKIE_MDP, "")
+     type : 458752
+   -
+     name : EnvoiEmailRappelMotDePasse
+     internal_properties : CAAAAAgAAAC5yMQDRktEGfq6m232PE8TqPG2mYSkmeHlnUFL2ZVX+LRJR6RXnmneJBRU/fmryu5KJ9VjjoeE5zl5vaa+7Xfk3TEh2TifuchA8V8i0hZhB59DU4+h34jFjbq447BQc+3neSw7YjItyAyn4IhYq/KYVwWpR5FIddZNCi4O8VM2NQ==
+     procedure_id : 2166765723300276807
+     type_code : 15
+     code : |1+
+      // Résumé : Envoie un message de rappel de mot de passe
+      // Syntaxe :
+      //EnvoiEmailRappelMotDePasse (<nIDUtil> est entier sur 8 octets, <sNouveauMotDePasse> est chaîne)
+      //
+      // Paramètres :
+      //	nIDUtil (entier sur 8 octets) :Identifiant de l'utilisateur
+      //	sNouveauMotDePasse (chaîne ANSI) :Nouveau mot de passe
+      
+      PROCEDURE EnvoiEmailRappelMotDePasse( nIDUtil est un entier sur 8 octets, sNouveauMotDePasse est une chaine )
+      
+      // Se positionne sur l'enregistrement de l'utilisateur
+      HLitRecherchePremier(Client,IDClient,nIDUtil)
+      
+      email.Sujet = ChaîneConstruit("Réinitialisation de votre mot de passe %1",gsNomSite)
+      email.Expéditeur = gsEmailExpediteurActivation
+      email.Destinataire[1] = Client.Email
+      email.NbDestinataire = 1
+      email.Message = ChaîneConstruit(<§@1e11e57d00c85e220000§>,gsNomSite,sNouveauMotDePasse)
+      
+      
+      // Passe le time out à 3 secondes (par défaut le serveur smtp est sur localhost, donc s'il met plus de 3 secondes à répondre, il y a un souci)
+      EmailChangeTimeOut(3)
+      
+      si gsLoginSMTP = "" ALORS
+      	erreur("Informations de débogage : Renseignez les paramètres d'envoi d'email")
+      	retour
+      FIN
+      
+      si EmailOuvreSessionSMTP(gsLoginSMTP,gsMotDePasseSMTP,gsServeurSMTP,gnPortSMTP) ALORS
+      	EmailEnvoieMessage(gsLoginSMTP)
+      	EmailFermeSession(gsLoginSMTP)
+      FIN
+      
+     type : 458752
+   -
+     name : nClientEnCours
+     procedure_id : 2166765727595309732
+     type_code : 15
+     code : |1+
+      // Résumé : Retourne l'identifiant de l'utilisateur connecté
+      // Syntaxe :
+      //[ <Résultat> = ] nIDUtilisateur ()
+      //
+      // Paramètres :
+      //	Aucun
+      
+      PROCEDURE nClientEnCours()
+      
+      renvoyer gnClientEnCours
+     type : 458752
+   -
+     name : ReinitialiseMotDePasse
+     procedure_id : 2166765727595375346
+     type_code : 15
+     code : |1+
+      // Résumé : Réinitialise le mot de passe d'un utilisateur, désactive le compte et envoie le mail d'activation
+      // Syntaxe :
+      //[ <Résultat> = ] ReinitialiseMotDePasse (<sIDUtilisateur> est chaîne)
+      //
+      // Paramètres :
+      //	sIDUtilisateur (chaîne ANSI) :Nom ou e-mail de l'utilisateur
+      
+      PROCEDURE ReinitialiseMotDePasse( sIDUtilisateur est une chaine )
+      
+      // Vérifie que le compte existe et qu'il est actif
+      //(Si identifiant disponible, c'est que le compte n'existe pas)
+      si bVerifieIdentifiantDisponible(sIDUtilisateur,vrai) = vrai ALORS
+      	renvoyer faux
+      FIN
+      
+      
+      // Génère un nouveau mot de passe
+      sNouveauMDP est une chaine
+      boucle (8)
+      	sNouveauMDP += caract(47+Hasard(75))
+      FIN
+      
+      // Réinitialise le compte
+      Client.MotDePasse = sNouveauMDP
+      HModifie(Client)
+      
+      // Envoi l'e-mail d'activation
+      EnvoiEmailRappelMotDePasse(Client.IDClient,sNouveauMDP)
+      
+      RENVOYER vrai
+      
+     type : 458752
+   -
+     name : bVerifieIdentifiantDisponible
+     internal_properties : CAAAAAgAAABk2piQTHc9frUYXC8sGrFNdcD6A/V8pr7a2vCJUrrLdXKYnWF8rhmA8NMIXOr9X7Ar7TD9Wujp9jHrkBgEgeqfpH9wUx6NSVSV/qWEdwJENj3QB7p0JHM=
+     procedure_id : 2166768012518181445
+     type_code : 15
+     code : |1-
+      // Résumé : Vérifie qu'un identifiant n'est pas déjà utilisé (comme e-mail ou nom d'affichage)
+      // Syntaxe :
+      //[ <Résultat> = ] bVerifieIdentifiantDisponible (<sIdentifiant> est chaîne [, <bBloqueEnreg> est booléen])
+      //
+      // Paramètres :
+      //	sIdentifiant (chaîne) : Chaîne à vérifier
+      //	bBloqueEnreg (booléen - valeur par défaut=0) : indique si la lecture doit bloquer l'enregistrement
+      // Valeur de retour :
+      // 	booléen : Vrai si l'identifiant n'existe ni en tant qu'e-mail, ni en tant que nom d'affichage
+      //
+      PROCEDURE bVerifieIdentifiantDisponible( sIdentifiant est une chaine, bBloqueEnreg est un booleen = faux )
+      
+      nFlag est un entier = hBlocageNon
+      si bBloqueEnreg alors nFlag = hBlocageEcriture
+      
+      // Vérification des e-mails
+      si HLitRecherchePremier(Client,Email,sIdentifiant,nFlag) alors
+      	renvoyer faux
+      FIN
+      
+      // Vérification des noms d'affichage
+      si HLitRecherchePremier(Client,Nom,sIdentifiant,nFlag) alors
+      	renvoyer faux
+      FIN
+      
+      // L'identifiant est libre
+      renvoyer vrai
+     type : 458752
+   -
+     name : AdresseAffichable
+     procedure_id : 2167503195004416927
+     type_code : 15
+     code : |1-
+      // Résumé :  Permet de récupérer une adresse affichable
+      // Syntaxe :
+      //[ <Résultat> = ] AdresseAffichable (<nIDAdresse> est entier sur 8 octets, <nOption> est entier)
+      //
+      // Paramètres :
+      //	nIDAdresse (entier sur 8 octets) : L'identifiant de l'adresse
+      //	nOption (entier) : < indiquez ici le rôle de bAdresseArchivée >
+      
+      PROCEDURE AdresseAffichable(nIDAdresse est un entier sur 8 octets, nOption est un entier )
+      
+      bAdresseArchivée est un booleen = (etbinaire(nOption,ADR_ARCHIVE)>0)
+      
+      sdAdresse est une source de données
+      sAdresse est une chaine
+      // On crée un alias sur le bon fichier et c'est cet alias que l'on va manipuler
+      si bAdresseArchivée ALORS
+      	HAlias(AdresseArchive,sdAdresse)
+      	HChangenom(sdAdresse, AdresseArchive..NomPhysique)
+      sinon
+      	HAlias(Adresse,sdAdresse)
+      	HChangeNom(sdAdresse, Adresse..NomPhysique)
+      FIN
+      
+      // Recherche de l'adresse
+      hlitrecherchepremier(sdAdresse,IDAdresse,nIDAdresse)
+      si htrouve(sdAdresse) alors
+      	// Formatage de l'adresse
+      	sAdresse = sdAdresse.Societe
+      	sAdresse += [RC] + sdAdresse.Voie
+      	sAdresse += [RC] + sdAdresse.Complement
+      	sAdresse += [RC] + sdAdresse.LieuDitBP
+      	sAdresse += [RC] + sdAdresse.CodePostal + [" "] + sdAdresse.Ville
+      	sAdresse += [RC] + sdAdresse.EtatProvince
+      	sAdresse += [RC] + sdAdresse.Pays
+      fin
+      
+      // on renvoie l'adresse formatée
+      renvoyer sAdresse
+      
+      FIN:
+      HannuleAlias(sdAdresse)
+     type : 458752
+   -
+     name : CivilitéVersChaine
+     procedure_id : 2167851916271032879
+     type_code : 15
+     code : |1-
+      // Résumé : Renvoie la civilité en chaîne
+      // Syntaxe :
+      //[ <Résultat> = ] CivilitéVersChaine (<nCivilité> [, <bAbrégée>])
+      //
+      // Paramètres :
+      //	nCivilité : Numéro de la civilité
+      // 	bAbrégée (valeur par défaut=1) : en abrégé ou en toutes lettres
+      // Valeur de retour :
+      // 	chaîne : La civilité en chaîne
+      
+      PROCEDURE CivilitéVersChaine(nCivilité, bAbrégée = vrai)
+      
+      si bAbrégée ALORS
+      	selon nCivilité
+      		cas 1 // Monsieur
+      			renvoyer "M."
+      		cas 2 // Madame
+      			renvoyer "Mme"
+      		cas 3 // Mademoiselle
+      			renvoyer "Mlle"
+      		AUTRE CAS
+      			dbgassertion(faux,"Civilité inconnue")
+      			Renvoyer ""
+      	FIN
+      SINON
+      	SELON nCivilité
+      		CAS 1 // Monsieur
+      			RENVOYER "Monsieur"
+      		CAS 2 // Madame
+      			RENVOYER "Madame"
+      		CAS 3 // Mademoiselle
+      			RENVOYER "Mademoiselle"
+      		AUTRE CAS
+      			dbgAssertion(Faux,"Civilité inconnue")
+      			RENVOYER ""
+      	FIN
+      	
+      FIN
+     type : 458752
+   -
+     name : VérifieConnexion
+     procedure_id : 2167860437496193295
+     type_code : 15
+     code : |1+
+      // Résumé : Vérifie qu'une connexion est en cours
+      // Syntaxe :
+      //VérifieConnexion ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	Aucune
+      
+      PROCEDURE VérifieConnexion()
+      
+      //Si aucun client n'est encore connecté, on tente une connexion via les cookies
+      SI bEstConnecte() = Faux ALORS
+      	
+      	sEmail est une chaîne = CookieLit(COOKIE_EMAIL)
+      	sMDP est une chaine = CookieLit(COOKIE_MDP)
+      	
+      	si bconnecte(sEmail, sMDP) = faux ALORS
+      		PageAffiche(index) // Page de connexion au compte client
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : AdresseNomComplet
+     procedure_id : 2235700777370345153
+     type_code : 15
+     code : |1-
+      // Résumé :  Permet de récupérer une adresse affichage
+      // Syntaxe :
+      //[ <Résultat> = ] AdresseNomComplet (<nIDAdresse> est entier sur 8 octets, <nOption> est entier)
+      //
+      // Paramètres :
+      //	nIDAdresse (entier sur 8 octets) : L'identifiant de l'adresse
+      //	nOption (entier) : <indiquez ici le rôle de nOption>
+      
+      PROCEDURE AdresseNomComplet(nIDAdresse est un entier sur 8 octets, nOption est un entier )
+      
+      bAdresseArchivée est un booleen = (etbinaire(nOption,ADR_ARCHIVE)>0)
+      
+      sdAdresse est une source de données
+      
+      // On crée un alias sur le bon fichier et c'est cet alias que l'on va manipuler
+      si bAdresseArchivée ALORS
+      	HAlias(AdresseArchive,sdAdresse)
+      	HChangenom(sdAdresse, AdresseArchive..NomPhysique)
+      sinon
+      	HAlias(Adresse,sdAdresse)
+      	HChangeNom(sdAdresse, Adresse..NomPhysique)
+      FIN
+      
+      // Recherche de l'adresse
+      hlitrecherchepremier(sdAdresse,IDAdresse,nIDAdresse)
+      si htrouve(sdAdresse) alors
+      	// Formatage de l'adresse
+      	// on renvoie l'adresse formatée
+      	RENVOYER sdAdresse.NomComplet
+      
+      fin
+      
+      dbgassertion(faux,"Adresse introuvable")
+      renvoyer ""
+      
+      
+      FIN:
+      HannuleAlias(sdAdresse)
+     type : 458752
+   -
+     name : EnvoiDemande
+     internal_properties : CAAAAAgAAAAiCc1324mg7eUpdcr7+Quqcu/FyxxKPw0f5vdpgliYgSFne6Jf/BXpG6hbpwRphXKwMwf8aU0KbBqF2QPTIlXL7bVe9hKeplpIrv7/Xnn1+MgQlV/al4CEyosLAjXo2P0uPiTw3ZnhL3lPKUIxlg==
+     procedure_id : 2235792642379137034
+     type_code : 15
+     code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      //[ <Résultat> = ] EnvoiDemande (<sDemande>)
+      //
+      // Paramètres :
+      //	sDemande :<indiquez ici le rôle de sDemande>
+      // Valeur de retour :
+      // 	booléen : // 	Aucune
+      
+      PROCEDURE EnvoiDemande(sDemande)
+      
+      bRes est un booléen
+      
+      Email.Sujet = ChaîneConstruit("Demande depuis le site : ",gsNomSite)
+      Email.Expéditeur = gsEmailExpediteurActivation
+      Email.Destinataire[1] = gsEmailSupportTechnique
+      Email.NbDestinataire = 1
+      Email.Message = sDemande
+      
+      
+      // Passe le time out à 3 seconde (par défaut le serveur smtp est sur localhost, donc s'il met plus de 3 secondes à répondre, il y a un souci)
+      EmailChangeTimeOut(3)
+      
+      SI EmailOuvreSessionSMTP(gsLoginSMTP,gsMotDePasseSMTP,gsServeurSMTP,gnPortSMTP) ALORS
+      	
+      	bRes = EmailEnvoieMessage(gsLoginSMTP)
+      	EmailFermeSession(gsLoginSMTP)
+      sinon
+      	bRes = faux
+      FIN
+      
+      renvoyer bRes
+     type : 458752
+   -
+     name : RécupèreClient
+     procedure_id : 1586065048106664176
+     type_code : 15
+     code : |1+
+      PROCEDURE RécupèreClient( nIDClient est un entier sur 8 )
+      
+      dbgAssertion(nIDClient<>0)
+      
+      stInfoClient est un STClient
+      si HLitRecherchePremier(Client,IDClient,nIDClient) ALORS
+      	FichierVersMémoire(stInfoClient,Client)
+      FIN
+      
+      renvoyer stInfoClient
+      
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CAAAAAgAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1e11e57d00c85e22
+  internal_properties : CAAAAAgAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Bonjour,\r\n\r\nVotre mot de passe sur le site %1 a été réinitialisé.\r\nVotre nouveau mot de passe est : %2\r\n\r\nCordialement,\r\nL'équipe %1\r\n"
+     index : 0
+   -
+     text :
+      fr-FR : Un nouveau mot de passe a été généré et vous a été envoyé par email.
+     index : 1
+custom_note :
+ internal_properties : CAAAAAgAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

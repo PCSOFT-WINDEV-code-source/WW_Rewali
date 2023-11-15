@@ -1,0 +1,261 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_Outils
+ major_version : 28
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x168e348101d16440
+ internal_properties : CAAAAAgAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1+
+      CONSTANT
+      	PICTO_ERREUR = "..\Images\erreur.png"
+      	PICTO_ERREUR_NAV = "Images\erreur.png"
+      	PICTO_INFO = "..\Images\info.png"
+      fin
+      
+      gnCouleurErreur est un entier = RGB(238, 196, 208)
+      gsCouleurErreur_Nav est une chaine = "RGB(238, 196, 208)"
+      
+      gnCouleurInfo est un entier = RGB(212, 245, 216)
+     type : 720896
+  procedures :
+   -
+     name : MiseEnFormeRéduction
+     internal_properties : CAAAAAgAAACoRhuekdzqGstRmoGKEn4lIKgFk7d0km7/PRDRSc6zhV+VGAxZOrTWrXm+jF1wmDkf/4h7Uj3dhyAsqj35oSv1x3fDVSsMAuZsJFoEJxMR2NgFuDn40ZHD755IyiFuDJvv2vpLbRqia1DN+DuInwQdbR6WPcMmkUWjiiwE/erAZfyFv+1SrxvKTc5tGnCqLapRsZvbXNxU0k0MrTVl4Mzb5wNZU8MRASa8mMg/4OImCBqI4KoPXfVbVeX1cVKvhRDT2CsmfF3IdW2rpw==
+     procedure_id : 1625294261393191514
+     type_code : 15
+     code : |1+
+      // Résumé : Mise en forme de la réduction pour l'affichage 
+      // Syntaxe :
+      // [ <Résultat> = ] MiseEnFormeRéduction (<sRéduction> est chaîne)
+      //
+      // Paramètres :
+      //	sRéduction (chaîne ANSI) : Réduction brute
+      // Valeur de retour :
+      // 	chaîne ANSI : Réduction avec mise en forme HTML pour l'affichage
+      
+      PROCEDURE MiseEnFormeRéduction(LOCAL sRéduction est une chaine)
+      
+      sRéductionMiseEnForme	est une chaine
+      
+      sHTMLDeBase				est une chaine 
+      
+      
+      selon sRéduction
+      	cas [= "Jusqu'à "
+      		
+      		sMotClé est une chaine = "Jusqu'à "
+      		
+      		SI PageAgencementEnCours() = 2 ALORS
+      			sHTMLDeBase = [
+      			<p>%1</p>
+      			<p style="font-size: 24px;">%2</p>
+      			]
+      			
+      		sinon
+      			sHTMLDeBase = [
+      			<p>%1</p>
+      			<p style="font-size: 24px;">%2</p>
+      			]
+      			
+      		FIN
+      		
+      		
+      		sLigne2 est une chaine = ExtraitChaîne(sRéduction,2, sMotClé)
+      		sRéductionMiseEnForme = ChaîneConstruit(sHTMLDeBase, sMotClé, sLigne2)
+      		
+      	cas [= "A partir de "
+      		
+      		sMotClé est une chaine = "A partir de "
+      		
+      		SI PageAgencementEnCours() = 2 ALORS
+      			
+      			sHTMLDeBase = [
+      			<p>%1</p>
+      			<p style="font-size: 14px;">%2</p>
+      			]
+      			
+      		sinon
+      			
+      			sHTMLDeBase = [
+      			<p>%1</p>
+      			<p style="font-size: 24px;">%2</p>
+      			]
+      			
+      		FIN
+      		
+      		sLigne2 est une chaine = ExtraitChaîne(sRéduction,2, sMotClé)
+      		sRéductionMiseEnForme = ChaîneConstruit(sHTMLDeBase, sMotClé, sLigne2)
+      		
+      	CAS [= "EXCLUSIF" :
+      		
+      		SI PageAgencementEnCours() = 2 ALORS
+      			sHTMLDeBase = [
+      			<p style="font-size: 12px;">%1</p>
+      			]
+      			sRéductionMiseEnForme = ChaîneConstruit(sHTMLDeBase, "EXCLU")
+      		sinon
+      			sHTMLDeBase = [
+      			<p style="font-size: 16px;">%1</p>
+      			]	
+      			sRéductionMiseEnForme = ChaîneConstruit(sHTMLDeBase, sRéduction)
+      		FIN
+      		
+      		
+      		
+      	AUTRE CAS :
+      		SI PageAgencementEnCours() = 2 ALORS
+      		sHTMLDeBase = [
+      			<p style="font-size: 20px;">%1</p>
+      		]
+      		sinon
+      			sHTMLDeBase = [
+      			<p style="font-size: 29px;">%1</p>
+      			]
+      			
+      		fin
+      		sRéductionMiseEnForme = ChaîneConstruit(sHTMLDeBase, sRéduction)
+      		
+      FIN
+      
+      renvoyer sRéductionMiseEnForme
+      
+     type : 458752
+   -
+     name : MiseEnFormePrésentation
+     procedure_id : 1625305076171595385
+     type_code : 15
+     code : |1-
+      // Résumé : Met en forme la présentation de la vente pour l'affichage
+      // Syntaxe :
+      //[ <Résultat> = ] MiseEnFormePrésentation (<sPrésentation> est chaîne)
+      //
+      // Paramètres :
+      //	sPrésentation (chaîne ANSI) : Présentation brute
+      // Valeur de retour :
+      // 	chaîne ANSI : Présentation avec mise en forme HTML pour l'affichage
+      
+      PROCEDURE MiseEnFormePrésentation(LOCAL sPrésentation est une chaine)
+      
+      sPrésentationMiseEnForme est une chaine
+      
+      pour TOUTE CHAINE sLigne DE sPrésentation SEPAREE PAR RC
+      	sPrésentationMiseEnForme += "<li>" + sLigne + "</li>"
+      FIN
+      
+      renvoyer sPrésentationMiseEnForme 
+     type : 458752
+   -
+     name : MiseEnFormePrixRéduc
+     internal_properties : CAAAAAgAAAAog3TST2yY+VZG6w0K+tseG5BcnFr/gR6cRhglbbiqF8JPgWR53vR9PHRWkDai5UogEAyl/pLZs8wI6U408PS5o1x6eoRWUyoaUv4ahL3WhZZ7UX21vqtIxOmUVss0Ti+7ehn7TIENtsgzbs1UqKHA3bu3epCFgKdQjYxeHQGvpm6gQornho1oHEkL0dS0lS3LkqVYy8A=
+     procedure_id : 1625773794883415718
+     type_code : 15
+     code : |1+
+      // Résumé : Mise en forme du prix, le prix avec réduction et le prix avant réduction : à partir de 52€ au lieu de 75€ 
+      // Syntaxe :
+      //[ <Résultat> = ] MiseEnFormePrixRéduc (<moPrixAvecRemise> est monétaire, <moPrixAvantRemise> est monétaire)
+      //
+      // Paramètres :
+      //	moPrixAvecRemise (monétaire) :Prix remisé
+      //	moPrixAvantRemise (monétaire) :Prix avant remise
+      // Valeur de retour :
+      // 	variant : Les prix avec mise en forme
+      
+      PROCEDURE MiseEnFormePrixRéduc(moPrixAvecRemise est un monetaire, moPrixAvantRemise est un monetaire)
+      
+      sHTMLBase est une chaine = [
+      <p>
+      <span>
+      À partir de &nbsp;
+      </span>
+      <span style="font-size: 24px;">
+      <span style="color: %1">
+      <strong>
+      %2€&nbsp;
+      </strong>
+      </span>
+      </span>
+      <span style="color: %1; vertical-align: super;">
+      /pers*
+      </span>
+      </p>
+      <div>
+      <span style="color: %3;">
+      au lieu de&nbsp;
+      </span>
+      <del>
+      <strong>
+      %4€
+      </strong>
+      </del>
+      </div>
+      ]
+      
+      sRGBPrixRemisé est une chaine = chaineconstruit("rgb(%1,%2,%3)",RVBRouge(CouleurPalette(couleurTexteLien1,3)), RVBVert(CouleurPalette(couleurTexteLien1,3)), RVBbleu(CouleurPalette(couleurTexteLien1,3)))
+      sRGBAulieude est une chaine = chaineconstruit("rgb(%1,%2,%3)",RVBRouge(CouleurPalette(couleurTexteTitre,1)), RVBVert(CouleurPalette(couleurTexteTitre,1)), RVBbleu(CouleurPalette(couleurTexteTitre,1)))
+      
+      renvoyer ChaîneConstruit(sHTMLBase, sRGBPrixRemisé, NumériqueVersChaîne(moPrixAvecRemise, ".0S"), sRGBAulieude, NumériqueVersChaîne(moPrixAvantRemise, ".0S"))
+      
+     type : 458752
+   -
+     name : MiseEnFormePrixRéducPrécis
+     internal_properties : CAAAAAgAAAAMt2jOcuDzQdrqF/UqhuuS5yRE7DrDJT4Q6jSF5Vy6q8ZT8ZRBsgAtkPgqGA5m1V6cLOw1Rt71U5hkbd5URPy91yh6Umxqn7pWHjogAjMcD4wR/zcTdBkm8p86tIlqNFl5qM8F+o9bBDbhXDvaVle6o4GFbJaDRl0Gs1LMCxf1KBTuKJwV9FtGIo8RFwqSS6bIlqFct9w=
+     procedure_id : 1627232955154436453
+     type_code : 15
+     code : |1+
+      // Résumé : Mise en forme du prix précis (et non plus un prix "à partir de")
+      // Syntaxe :
+      //[ <Résultat> = ] MiseEnFormePrixRéducPrécis (<moPrixAvecRemise> est monétaire, <moPrixAvantRemise> est monétaire)
+      //
+      // Paramètres :
+      //	moPrixAvecRemise (monétaire) : Prix remisé
+      //	moPrixAvantRemise (monétaire) : Prix avant remise
+      // Valeur de retour :
+      // 	variant : Prix mis en forme
+      
+      PROCEDURE MiseEnFormePrixRéducPrécis(moPrixAvecRemise est un monetaire, moPrixAvantRemise est un monetaire)
+      
+      sHTMLBase est une chaine = [
+      	<span style="font-size: 18px;">
+      	<span style="color: %1">
+      	%2€
+      	</span>
+      	</span>
+      	<span style="color: %1;">
+      	/pers
+      	</span>
+      	<span>
+      	au lieu de&nbsp;
+      	</span>
+      	<span style="color: %3;">
+      	<del>
+      	%4€
+      	</del>
+      	</span>
+      ]
+      
+      sRGBPrixRemisé est une chaine = chaineconstruit("rgb(%1,%2,%3)",RVBRouge(CouleurPalette(couleurTexteLien1,3)), RVBVert(CouleurPalette(couleurTexteLien1,3)), RVBbleu(CouleurPalette(couleurTexteLien1,3)))
+      sRGBAulieude est une chaine = chaineconstruit("rgb(%1,%2,%3)",RVBRouge(CouleurPalette(couleurTexteTitre,1)), RVBVert(CouleurPalette(couleurTexteTitre,1)), RVBbleu(CouleurPalette(couleurTexteTitre,1)))
+      
+      renvoyer ChaîneConstruit(sHTMLBase, sRGBPrixRemisé, NumériqueVersChaîne(moPrixAvecRemise, ".0S"), sRGBAulieude, NumériqueVersChaîne(moPrixAvantRemise,".0S"))
+      
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CAAAAAgAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1fbd04310d59067b
+  internal_properties : CAAAAAgAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CAAAAAgAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ
